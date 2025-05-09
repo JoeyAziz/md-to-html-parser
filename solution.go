@@ -115,6 +115,7 @@ func parseWord(word string) (out *strings.Builder) {
 			if i+1 < len(word) && word[i+1] == '*' { // strong
 				parseStrong(out, inStrong)
 				inStrong = !inStrong
+				i++
 				continue
 			} else { // em
 				parseEm(out, inEm)
