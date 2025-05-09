@@ -7,9 +7,9 @@ type HTMLTag struct {
 	CloseTag string
 }
 
-const _breakTag = "<br />"
+const breakTag = "<br />"
 
-var _paragraphTag = HTMLTag{
+var paragraphTag = HTMLTag{
 	OpenTag:  "<p>",
 	CloseTag: "</p>",
 }
@@ -47,7 +47,7 @@ func Parse(str string) string {
 
 		out.WriteString(parseLine(line).String())
 		if i < len(lines)-1 {
-			out.WriteString(_breakTag)
+			out.WriteString(breakTag)
 		}
 	}
 	return out.String()
@@ -60,13 +60,12 @@ func parseLine(line string) (out *strings.Builder) {
 	var headerTag *HTMLTag
 	for i, word := range words {
 		if i == 0 {
-			headerTag = parseHeaders(word)
+			headerTag = parseHeader(word)
 			if headerTag != nil {
 				out.WriteString(headerTag.OpenTag)
 				continue
-			} else {
-				out.WriteString(_paragraphTag.OpenTag)
 			}
+			out.WriteString(paragraphTag.OpenTag)
 		}
 		out.WriteString(parseWord(word).String())
 		if i < len(words)-1 {
@@ -77,13 +76,12 @@ func parseLine(line string) (out *strings.Builder) {
 	if headerTag != nil {
 		out.WriteString(headerTag.CloseTag)
 	} else {
-		out.WriteString(_paragraphTag.CloseTag)
+		out.WriteString(paragraphTag.CloseTag)
 	}
-	headerTag = nil
 	return out
 }
 
-func parseHeaders(word string) *HTMLTag {
+func parseHeader(word string) *HTMLTag {
 	if tag, ok := mdHeadersMap[word]; ok {
 		return &tag
 	}
@@ -101,12 +99,11 @@ func parseWord(word string) (out *strings.Builder) {
 				parseStrong(out, inStrong)
 				inStrong = !inStrong
 				i++
-				continue
 			} else { // em
 				parseEm(out, inEm)
 				inEm = !inEm
-				continue
 			}
+			continue
 		}
 		out.WriteByte(word[i])
 	}
